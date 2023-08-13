@@ -1,8 +1,5 @@
 package ca.tutic.scrava;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import ca.tutic.scrava.ui.CLI;
 
 public class Scrava {

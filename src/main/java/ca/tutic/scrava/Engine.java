@@ -1,103 +1,77 @@
 package ca.tutic.scrava;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Properties;
-import java.util.Scanner;
-import java.net.URL;
 import java.nio.file.Path;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
-import java.util.Map.Entry;
-import ca.tutic.scrava.Templater;
-
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
 
-import ca.tutic.scrava.ui.CLI;
+import ca.tutic.scrava.io.Configs;
+import ca.tutic.scrava.io.ProjectFiles;
+import ca.tutic.scrava.io.Templater;
 
 public class Engine {
     Properties props;
 
     public Engine() throws IOException {
-        props = parseProperties();
-    }
-
-    public static boolean isProjectDir() {
-        return isProjectDir(System.getProperty("user.dir"));
-    }
-
-    public static boolean isProjectDir(String dir) {
-        File file = Paths.get(dir, "scrava.properties").toFile();
-        return file.exists();
-    }
-
-    public static void assertProjectDir() throws IllegalArgumentException {
-        if (!isProjectDir()) {
-            throw new IllegalArgumentException(
-                    "Relocate to project folder or create new one with \"startproject [name]\".");
-        }
-    }
-
-
-
-    public static Properties parseProperties() throws IOException {
-        return parseProperties(System.getProperty("user.dir"));
-    }
-
-    public static Properties parseProperties(String dir) throws IOException {
-        Properties props = new Properties();
-        File file = Paths.get(dir, "config.properties").toFile();
-        if (file.exists()) {
-            try (FileInputStream stream = new FileInputStream(file)) {
-                props.load(stream);
-            } catch (IOException e) {
-                throw e;
-            }
-        }
-        return props;
+        props = Configs.parseProperties();
     }
 
     public void startSpider(String[] spiders, Map<String, String> options) {
 
     }
 
-    public void startProject(String name, Map<String, String> options) throws Exception {
-        // Defaults
-        if (!options.containsKey("path")) {options.put("path", System.getProperty("user.dir"));}
-        if (!options.containsKey("template")) {options.put("template", "default");}
-        
-        if (isProjectDir(options.get("path"))) {
-            System.out.println("Project already existing at target location");
-            return;
-        }
+    public void startProject(String name, Map<String, String> options) throws IOException, URISyntaxException, FileNotFoundException {
+        options.putIfAbsent("path", System.getProperty("user.dir"));
+        options.putIfAbsent("template", "default");
 
-        File template;
-        URL templateURL = getClass().getClassLoader().getResource("templates/projects/" + options.get("template"));
-        if (templateURL != null) {
-            template = new File(templateURL.toURI());
-        } else {
-            template = new File(options.get("template"));
-        }
-
-        if (!template.exists() || !template.isDirectory()) {
-            System.out.println("Invalid template folder");
+        if (props.containsKey("projectName")) {
+            System.out.printf("Project \"%s\" already existing at target location %s%n", props.get("projectName"), options.get("path"));
             return;
-        }
+        } 
 
-        File target = new File(options.get("path"));
-        if (!template.exists() || !template.isDirectory()) {
-            System.out.println("Invalid target folder");
-            return;
-        }
-        
-        Templater.newProject(name, target, template);
+        File templateDir = ProjectFiles.getResourceFile(
+            options.get("template"),
+            "templates/projects/",
+            f -> f.exists() && f.isDirectory()
+        );
+
+
+        File targetDir = ProjectFiles.getResourceFile(
+            options.get("path"),
+            f -> f.exists() && f.isDirectory()            
+        );
+
+        Templater.create(name, templateDir, targetDir);
     }
 
-    public void genSpider(String name, Map<String, String> options) {
+    public void genSpider(String name, Map<String, String> options) throws IOException, URISyntaxException, FileNotFoundException {
+        options.putIfAbsent("path", System.getProperty("user.dir"));
+        options.putIfAbsent("template", "basic");
+
+        if (!props.containsKey("projectName")) {
+            System.out.printf("No project found at target location %s%n", options.get("path"));
+            return;
+        } 
+
+        File templateFile = ProjectFiles.getResourceFile(
+            options.get("template") + ".java.ftl",
+            "templates/spiders/",
+            f -> f.exists() && f.isFile()
+        );
+
+
+        File targetDir = ProjectFiles.getResourceFile(
+            Path.of(options.get("path"), "spiders").toString(),
+            f -> f.exists() && f.isDirectory()            
+        );
+
+        Templater.create(name, templateFile, targetDir);
 
     }
 

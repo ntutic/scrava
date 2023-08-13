@@ -1,22 +1,12 @@
 package ca.tutic.scrava.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
-import java.util.Properties;
 import java.util.Scanner;
-import java.util.Map.Entry;
-import java.nio.file.Paths;
-import org.apache.commons.lang3.StringUtils;
 
 import ca.tutic.scrava.Engine;
 

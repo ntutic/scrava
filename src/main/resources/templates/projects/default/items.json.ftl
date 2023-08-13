@@ -1,8 +1,5 @@
 {
-    "GLOBAL": {
-        "id::serial": null
-    },
-    "someItem": {
-        "someField::someType": "someDefault"
+    "itemName": {
+        "fieldName::type": "default"
     }
 }

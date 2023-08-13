@@ -1,1 +1,2 @@
-projectName=${projectName}
+projectName=${name}
+
