@@ -1,8 +1,5 @@
 {
-    "GLOBAL": {
-        "id::serial": null
-    },
-    {
-        
+    "itemName": {
+        "fieldName::type": "default"
     }
 }
