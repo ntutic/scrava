@@ -14,7 +14,6 @@ public abstract class CrawlSpider {
     public abstract Response parseStartUrl(Request request, Item item);
     public abstract Response parseNextUrl(Request request, Item item);
     public void followUrl(Response response, Item item) {
-        rules.parseNextUrl(rules.follow(response), item);
+        parseNextUrl(rules.follow(response), item);
     }
-
 }
