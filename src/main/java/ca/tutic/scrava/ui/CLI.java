@@ -1,14 +1,10 @@
 package ca.tutic.scrava.ui;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
-
 import ca.tutic.scrava.Engine;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class CLI extends Engine {
     private static Map<String, Map<String, String>> flags = getFlags();
@@ -67,7 +63,7 @@ public class CLI extends Engine {
         String command = args[0];
         for (int i = 2; i < args.length; i++) {
             for (Entry<String, String> flagSet: flags.get(command).entrySet()) {
-                if (args[i] == flagSet.getKey()) {
+                if (args[i].equals(flagSet.getKey())) {
                     options.put(flagSet.getValue(), args[i + 1]);
                     i++;
                     break;

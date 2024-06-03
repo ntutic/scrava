@@ -1,0 +1,26 @@
+While Scrapy's documentation shows a good overview of the module's architecture, it doesn't quite highlight the code flow's details and how the different classes hook into each other. For the most part, there should be no need to reinvent the wheel to translate Scrapy into a Java copycat, so it would make most sense to follow it's thought-out architecture. In order to do so, here's a detailed overview of how the library's components fit together. This only looks at a basic spider ran from the command line.
+
+Before the CLI is parsed, the initialization classes are executed :
+
+__init__ : version checking
+commands/__init__: declares an "abstract" classes used by all the command classes
+	`class ScrapyCommand`: interfaces `run()` and descriptive methods for prints, implements parser for common CLI options
+	`class BaseRunSpiderCommands(ScrapyCommand)`: adds parser for spider-only options 
+	`class ScrapyHelpFormatter`: used for help messages
+
+A few more __init__'s prime some specific classes like `ItemLoader`, `UrlExtractor`, `PipelineManager`, etc.
+
+The execution enters in the `scrapy` bin which callses `execute()`.
+
+cmdline:
+	def execute(argv=None, settings=None): 
+		overrides argv with command args
+		create settings if not passed (`utils/project` func)
+		validates if inside project (`utils/project` func)
+		
+
+
+
+
+
+
